@@ -9,8 +9,8 @@
 
 //---------------------------------------------------------------------------------------------
 
-int EVOLUTIONS = 500;
-int PARTICLES = 50;
+int EVOLUTIONS = 10;
+int PARTICLES = 5;
 float C1 = 1.5;
 float C2 = 1.5;
 float W = 0.9; // inertia weight
@@ -178,6 +178,7 @@ Pos positionUpdate(Pos actualPos, Pos vnew)
     return Pnew;
 }
 
+
 //--------------------------------------------------------------------------------
 void runPSO()
 {
@@ -186,45 +187,60 @@ void runPSO()
     std::vector<Pos> initPositions = initPosXY();
     std::vector<float> funcValue = function(initPositions);
 
-    std::vector<Pos> pBest = initPositions;
-    std::vector<Pos> pActual = initPositions;
+    std::vector<Pos> pBestPositions = initPositions;
+
+    std::vector<Pos> pPositions = initPositions;
     std::vector<Pos> pVelocities = initVelocities;
-    std::vector<float> actualfuncValue = funcValue;
+
+    std::vector<Pos> pPositionsNew = pPositions;
+    std::vector<Pos> pVelocitiesNew = pVelocities;
+    // std::vector<float> actualfuncValue = funcValue;
+
+    std::pair<Pos, float> gBest = findBestValue(pPositions, funcValue);
+
+    Pos gBestPos = gBest.first;
+
+    float gBestValue = gBest.second;
 
     for (int jj = 0; jj < EVOLUTIONS; jj++)
     {
-        std::pair<Pos, float> gBest = findBestValue(initPositions, actualfuncValue);
-
-        float gBestValue = gBest.second;
 
         for (int ii = 0; ii < PARTICLES; ii++)
         {
 
-            Pos veloNew = velocityUpdate(gBest.first, pBest[ii], pActual[ii], pVelocities[ii]);
-            Pos posNew = positionUpdate(veloNew, pActual[ii]);
-            float pfunc = func(posNew);
+            pVelocitiesNew[ii] = velocityUpdate(gBestPos, pBestPositions[ii], pPositions[ii], pVelocities[ii]);
+            pPositionsNew[ii] = positionUpdate(pVelocitiesNew[ii], pPositions[ii]);
+            float pfunc = func(pPositionsNew[ii]);
 
-            if (pfunc < gBestValue)
+            if (pfunc > gBestValue)
             {
-
                 gBestValue = pfunc;
+                gBestPos = pPositionsNew[ii];
             }
-            if (pfunc < actualfuncValue[ii])
+            if (pfunc > funcValue[ii])
             {
-                pBest[ii] = posNew;
-                actualfuncValue[ii] = pfunc;
+                pBestPositions[ii] = pPositionsNew[ii];
+                funcValue[ii] = pfunc;
             }
 
-            for (int ii = 0; ii < pBest.size(); ii++)
+              for (int ii = 0; ii < pBestPositions.size(); ii++)
             {
 
-                std::cout << "x : " << pBest[ii].x << " y :" << pBest[ii].y << "\n";
+                std::cout << "x : " << pBestPositions[ii].x << " y :" << pBestPositions[ii].y << "\n";
             }
 
             std::cout << "global best " << gBestValue << "\n";
+       
         }
+
+            pPositions = pPositionsNew;
+            pVelocities = pVelocitiesNew;
+
     }
+ 
 }
+
+
 
 //---------------------------------------------------------------------------------------------
 int main()
