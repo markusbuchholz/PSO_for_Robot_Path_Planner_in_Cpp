@@ -87,7 +87,6 @@ std::vector<float> function(std::vector<Pos> pos)
     for (auto &ii : pos)
     {
 
-        // funcValue.push_back(ii.x * ii.x - ii.x * ii.y + ii.y * ii.y + 2 * ii.x + 4 * ii.y + 3);
         funcValue.push_back(ii.x * ii.y);
     }
 
@@ -130,8 +129,6 @@ std::pair<Pos, float> findBestValue(std::vector<Pos> pos, std::vector<float> fun
 
 float func(Pos pos)
 {
-
-    // return (pos.x * pos.x - pos.x * pos.y + pos.y * pos.y + 2 * pos.x + 4 * pos.y + 3);
     return (pos.x * pos.y);
 }
 
